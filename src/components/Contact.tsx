@@ -199,38 +199,60 @@
 
 
 import { motion } from "framer-motion"
-import { GitFork, Link2, Mail, Phone, Send } from "lucide-react"
 import { useState, useRef } from "react"
 import { profile } from "../data/content"
 import { Logo } from "./Logo"
 import { useI18n } from "../i18n"
 import emailjs from "@emailjs/browser"
+import { GitFork, Link2, Loader2, Mail, Phone, Send } from "lucide-react"
+
+const fieldClass =
+  "w-full rounded-xl border border-teal-400/20 bg-void/70 px-4 py-3.5 text-sm text-white shadow-inner shadow-black/25 outline-none transition placeholder:text-slate-500 focus:border-emerald-400/45 focus:ring-2 focus:ring-emerald-400/20"
 
 export function Contact() {
   const formRef = useRef<HTMLFormElement>(null)
-  const [sentHint, setSentHint] = useState(false)
+  const [formFeedback, setFormFeedback] = useState<"success" | "error" | null>(
+    null,
+  )
+  const [isSending, setIsSending] = useState(false)
   const { t } = useI18n()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!formRef.current) return
+    const form = formRef.current
+    if (!form || isSending) return
 
-    const SERVICE_ID = import.meta.env.service_id;
-    const TEMPLATE_ID = import.meta.env.template_id;
-    const PUBLIC_KEY = import.meta.env.public_key;
+    const SERVICE_ID = import.meta.env.VITE_SERVICE_ID as string | undefined
+    const TEMPLATE_ID = import.meta.env.VITE_TEMPLATE_ID as string | undefined
+    const PUBLIC_KEY = import.meta.env.VITE_PUBLIC_KEY as string | undefined
+
+    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+      setFormFeedback("error")
+      return
+    }
+
+    setFormFeedback(null)
+    setIsSending(true)
+
+    const fd = new FormData(form)
+    const templateParams = {
+      from_name: String(fd.get("from_name") ?? "").trim(),
+      reply_to: String(fd.get("reply_to") ?? "").trim(),
+      message: String(fd.get("message") ?? "").trim(),
+    }
 
     emailjs
-      .sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY)
+      .send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
       .then(() => {
-        setSentHint(true)
-        formRef.current?.reset()
-
-        // Hide message after 4 seconds
-        setTimeout(() => setSentHint(false), 4000)
+        form.reset()
+        setFormFeedback("success")
+        window.setTimeout(() => setFormFeedback(null), 6000)
       })
-      .catch(() => {
-        alert("Something went wrong. Please try again.")
+      .catch((err) => {
+        console.error("EmailJS error:", err)
+        setFormFeedback("error")
       })
+      .finally(() => setIsSending(false))
   }
 
   return (
@@ -327,31 +349,103 @@ export function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.12 }}
-            className="glass-panel rounded-2xl border border-teal-400/20 bg-white/[0.04] p-6 md:p-8"
+            className="glass-panel relative overflow-hidden rounded-2xl border border-teal-400/20 bg-white/[0.04] p-6 shadow-lg shadow-emerald-950/20 md:p-8"
           >
+            <div
+              className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/55 to-transparent"
+              aria-hidden
+            />
             <h3 className="text-lg font-bold text-white">
               {t("contact_send")}
             </h3>
 
             <form
-              ref={formRef}  // ✅ FIXED
-              className="mt-6 space-y-4"
+              ref={formRef}
+              className="mt-7 space-y-5"
               onSubmit={handleSubmit}
             >
-              <input name="name" placeholder={t("contact_name")} className="input" />
-              <input name="email" type="email" placeholder="you@example.com" className="input" />
-              <textarea name="message" required rows={4} placeholder={t("contact_message")} className="input" />
+              <div className="space-y-2">
+                <label
+                  htmlFor="contact-from-name"
+                  className="text-xs font-semibold uppercase tracking-wider text-slate-400"
+                >
+                  {t("contact_name")}
+                </label>
+                <input
+                  id="contact-from-name"
+                  name="from_name"
+                  type="text"
+                  autoComplete="name"
+                  placeholder={t("contact_name")}
+                  className={fieldClass}
+                  required
+                />
+              </div>
 
-              <button type="submit" className="btn-gradient w-full flex items-center justify-center gap-2">
-                <Send className="size-4" />
-                {t("contact_btn")}
-              </button>
+              <div className="space-y-2">
+                <label
+                  htmlFor="contact-reply-to"
+                  className="text-xs font-semibold uppercase tracking-wider text-slate-400"
+                >
+                  {t("contact_email")}
+                </label>
+                <input
+                  id="contact-reply-to"
+                  name="reply_to"
+                  type="email"
+                  autoComplete="email"
+                  placeholder={t("contact_email_ph")}
+                  className={fieldClass}
+                  required
+                />
+              </div>
 
-              {sentHint && (
-                <p className="text-sm text-emerald-400">
-                  {t("contact_hint")}
+              <div className="space-y-2">
+                <label
+                  htmlFor="contact-message"
+                  className="text-xs font-semibold uppercase tracking-wider text-slate-400"
+                >
+                  {t("contact_message")}
+                </label>
+                <textarea
+                  id="contact-message"
+                  name="message"
+                  rows={5}
+                  placeholder={t("contact_message")}
+                  className={`${fieldClass} min-h-[120px] resize-y`}
+                  required
+                />
+              </div>
+
+              {formFeedback === "success" && (
+                <p
+                  role="status"
+                  className="rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200"
+                >
+                  {t("contact_success")}
                 </p>
               )}
+              {formFeedback === "error" && (
+                <p
+                  role="alert"
+                  className="rounded-xl border border-rose-400/25 bg-rose-500/10 px-4 py-3 text-sm text-rose-200"
+                >
+                  {t("contact_error")}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={isSending}
+                className="btn-gradient flex w-full items-center justify-center gap-2 py-3.5 text-sm font-semibold disabled:pointer-events-none disabled:opacity-60"
+              >
+                {isSending ? (
+                  <Loader2 className="size-4 shrink-0 animate-spin" />
+                ) : (
+                  <Send className="size-4 shrink-0" />
+                )}
+                {t("contact_btn")}
+              </button>
             </form>
           </motion.div>
         </div>

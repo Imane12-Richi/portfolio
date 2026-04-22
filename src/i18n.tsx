@@ -51,6 +51,9 @@ const dict = {
     contact_message: "Message",
     contact_btn: "Envoyer",
     contact_hint: "Si rien ne s’ouvre, vérifiez qu’un client mail est configuré.",
+    contact_success: "Message envoyé. Merci — je vous réponds dès que possible.",
+    contact_error: "Impossible d’envoyer le message. Réessayez dans un instant.",
+    contact_email_ph: "vous@exemple.com",
     footer: "React, TypeScript & Tailwind.",
   },
   en: {
@@ -94,6 +97,9 @@ const dict = {
     contact_message: "Message",
     contact_btn: "Send",
     contact_hint: "If nothing opens, make sure a mail app is configured.",
+    contact_success: "Message sent. Thanks — I’ll get back to you shortly.",
+    contact_error: "Couldn’t send the message. Please try again in a moment.",
+    contact_email_ph: "you@example.com",
     footer: "React, TypeScript & Tailwind.",
   },
 } as const
