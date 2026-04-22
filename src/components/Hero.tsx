@@ -147,7 +147,7 @@ export function Hero() {
             </a>
           </motion.div>
 
-          <p className="mt-6 text-sm text-slate-500">{profile.location}</p>
+          {/* location removed */}
         </div>
 
         <motion.div

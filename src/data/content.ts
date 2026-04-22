@@ -7,9 +7,8 @@ export const profile = {
     "Je conçois des expériences digitales modernes — du prototype à la mise en production, avec une attention constante à l’utilisateur.",
   taglineEn:
     "I build modern digital experiences — from prototype to production, with a constant focus on the end user.",
-  email: "contact@exemple.com",
-  phone: "+33 6 00 00 00 00",
-  location: "France · Remote",
+  email: "imanerichi8@gmail.com",
+  phone: "0660188611",
   /** Fichier dans public/ → URL à la racine : /nom.svg (pas /public/...) */
   avatarUrl: "/img.svg",
   social: {
@@ -29,8 +28,8 @@ export const services: Service[] = [
   {
     titleFr: "Développement web",
     titleEn: "Web development",
-    descFr: "Applications React / TypeScript performantes, SEO et accessibilité.",
-    descEn: "High-performance React/TypeScript apps, SEO and accessibility.",
+    descFr: "Applications React / TypeScript performantes, Express.js, PostgreSQL, etc.",
+    descEn: "High-performance React/TypeScript apps.",
   },
   {
     titleFr: "UX/UI design",
@@ -92,6 +91,9 @@ export type Project = {
   github: string
   demo: string
   image: string
+  imageMode?: "cover" | "contain"
+  imagePosition?: string
+  imageBgClassName?: string
 }
 
 export type ProjectFilter = {
@@ -102,48 +104,50 @@ export type ProjectFilter = {
 
 export const projects: Project[] = [
   {
-    title: "SaaS analytics",
-    descFr: "Tableaux de bord temps réel et agrégation de données.",
-    descEn: "Real-time dashboards and data aggregation.",
-    stack: ["React", "Node", "PostgreSQL"],
+    title: "Application web de covoiturage pour femmes",
+    descFr:
+      "Plateforme de covoiturage dédiée aux femmes : recherche de trajets, profils, et messagerie pour organiser des déplacements en confiance.",
+    descEn:
+      "Women-focused carpooling web app: ride search, profiles, and messaging to plan trips with confidence.",
+    stack: ["Angular", "Spring Boot"],
     category: "fullstack" as const,
     featured: true,
     github: "https://github.com",
     demo: "https://vercel.app",
-    image: "",
+    image: "/yala-covoiturage.png",
+    imageMode: "contain",
+    imageBgClassName: "bg-white",
   },
   {
-    title: "API e-commerce",
-    descFr: "Catalogue, panier et paiements modulaires.",
-    descEn: "Catalog, cart, and modular payments.",
-    stack: ["TypeScript", "Express", "Stripe"],
+    title: "Admin IA Coffee Dashboard",
+    descFr:
+      "Interface full stack de monitoring pour robot barista. Centralise les commandes et les données clients collectées par l’IA, avec suivi en temps réel des statistiques et de l’activité.",
+    descEn:
+      "Full‑stack monitoring dashboard for a barista robot. Centralizes orders and AI-collected customer data, with real-time stats and user activity tracking.",
+    stack: ["React", "Express", "Node.js"],
     category: "fullstack" as const,
     featured: true,
     github: "https://github.com",
     demo: "",
-    image: "",
+    image: "/coffee-dashboard.png",
+    imageMode: "contain",
+    imageBgClassName: "bg-[#041018]",
   },
   {
-    title: "Design system",
-    descFr: "Composants documentés et thèmes pour toute l’équipe.",
-    descEn: "Documented components and themes for the whole team.",
-    stack: ["React", "Storybook", "Tailwind"],
-    category: "frontend" as const,
+    title: "E-commerce cosmétiques",
+    descFr:
+      "Site e-commerce de cosmétiques : catalogue, panier, authentification et back-office. Frontend en EJS, backend Express, base de données MongoDB Atlas.",
+    descEn:
+      "Cosmetics e-commerce website: catalog, cart, authentication, and admin area. EJS frontend, Express backend, MongoDB Atlas database.",
+    stack: ["EJS", "Express", "MongoDB Atlas"],
+    category: "fullstack" as const,
     featured: true,
-    github: "",
-    demo: "https://example.com",
-    image: "",
-  },
-  {
-    title: "Worker webhooks",
-    descFr: "Files d’événements et retries pour intégrations.",
-    descEn: "Event queues and retries for integrations.",
-    stack: ["Node.js", "Redis"],
-    category: "backend" as const,
-    featured: false,
     github: "https://github.com",
     demo: "",
-    image: "",
+    image: "/cosmetics-ecommerce.png",
+    imageMode: "cover",
+    imagePosition: "object-center",
+    imageBgClassName: "bg-[#f4efe8]",
   },
 ]
 

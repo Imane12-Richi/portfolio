@@ -97,11 +97,17 @@ export function Projects() {
                 <article className="glass-panel overflow-hidden rounded-2xl border border-teal-400/15 transition-shadow hover:shadow-[0_0_50px_-12px_rgba(0,255,170,0.18)]">
                   <div className="relative aspect-[16/10] overflow-hidden">
                     {p.image ? (
-                      <img
-                        src={p.image}
-                        alt=""
-                        className="size-full object-cover"
-                      />
+                      <div
+                        className={`size-full ${p.imageBgClassName ?? "bg-black/20"}`}
+                      >
+                        <img
+                          src={p.image}
+                          alt=""
+                          className={`size-full ${
+                            p.imageMode === "contain" ? "object-contain" : "object-cover"
+                          } ${p.imagePosition ?? "object-center"}`}
+                        />
+                      </div>
                     ) : (
                       <div
                         className={`flex size-full items-end justify-start bg-gradient-to-br p-6 ${grad}`}
