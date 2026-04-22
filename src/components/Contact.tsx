@@ -1,31 +1,45 @@
 import { motion } from "framer-motion"
 import { GitFork, Link2, Mail, Phone, Send } from "lucide-react"
-import { type FormEvent, useState } from "react"
+import {  useState, useRef } from "react"
 import { profile } from "../data/content"
 import { Logo } from "./Logo"
 import { useI18n } from "../i18n"
+import emailjs from "@emailjs/browser"
 
 export function Contact() {
+  const formRef = useRef<HTMLFormElement>(null)
   const [sentHint, setSentHint] = useState(false)
   const { t } = useI18n()
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formRef.current) return;
+    const SERVICE_ID = import.meta.env.service_id;
+    const TEMPLATE_ID = import.meta.env.template_id;
+    const PUBLIC_KEY = import.meta.env.public_key;
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const form = e.currentTarget
-    const fd = new FormData(form)
-    const name = String(fd.get("name") ?? "").trim()
-    const email = String(fd.get("email") ?? "").trim()
-    const message = String(fd.get("message") ?? "").trim()
-    const subject = encodeURIComponent(
-      name ? `Message portfolio — ${name}` : "Message depuis le portfolio",
-    )
-    const body = encodeURIComponent(
-      [name && `Nom : ${name}`, email && `Email : ${email}`, "", message].filter(Boolean).join("\n"),
-    )
-    window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`
-    setSentHint(true)
-    window.setTimeout(() => setSentHint(false), 4000)
-  }
+    emailjs
+      .sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY)
+      .then(() => alert("Message sent successfully! 🎉"))
+      .catch(() => alert("Something went wrong. Please try again."));
+  };
+
+  // function onSubmit(e: FormEvent<HTMLFormElement>) {
+  //   e.preventDefault()
+  //   const form = e.currentTarget
+  //   const fd = new FormData(form)
+  //   const name = String(fd.get("name") ?? "").trim()
+  //   const email = String(fd.get("email") ?? "").trim()
+  //   const message = String(fd.get("message") ?? "").trim()
+  //   const subject = encodeURIComponent(
+  //     name ? `Message portfolio — ${name}` : "Message depuis le portfolio",
+  //   )
+  //   const body = encodeURIComponent(
+  //     [name && `Nom : ${name}`, email && `Email : ${email}`, "", message].filter(Boolean).join("\n"),
+  //   )
+  //   window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`
+  //   setSentHint(true)
+  //   window.setTimeout(() => setSentHint(false), 4000)
+  // }
 
   return (
     <section
@@ -114,7 +128,7 @@ export function Contact() {
             className="glass-panel rounded-2xl border border-teal-400/20 bg-white/[0.04] p-6 md:p-8"
           >
             <h3 className="text-lg font-bold text-white">{t("contact_send")}</h3>
-            <form className="mt-6 space-y-4" onSubmit={onSubmit}>
+            <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="name" className="text-sm font-medium text-slate-300">
                   {t("contact_name")}
